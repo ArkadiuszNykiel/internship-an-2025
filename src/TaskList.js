@@ -4,53 +4,78 @@ import axios from 'axios';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Fetch tasks from Flask API
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/tasks');
-      setTasks(response.data);
+      const res = await axios.get('http://localhost:5000/tasks');
+      setTasks(res.data);
     } catch (error) {
-      console.error('There was an error fetching the tasks!', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch tasks:', error);
     }
   };
 
-  // Fetch tasks when the component mounts
   useEffect(() => {
     fetchTasks();
   }, []);
 
-  // Delete task
   const deleteTask = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/tasks/${id}`);
-      fetchTasks(); // Refresh the task list
+      fetchTasks();
     } catch (error) {
-      console.error('There was an error deleting the task!', error);
+      console.error('Failed to delete task:', error);
+    }
+  };
+
+  const toggleCompletion = async (task) => {
+    try {
+      await axios.put(`http://localhost:5000/tasks/${task.id}`, {
+        completed: !task.completed,
+      });
+      fetchTasks();
+    } catch (error) {
+      console.error('Failed to update task:', error);
     }
   };
 
   return (
-    <div>
-      <h2>Task List</h2>
-      {loading ? (
-        <p>Loading tasks...</p>
-      ) : (
-        <ul>
-          {tasks.map((task) => (
-            <li key={task.id}>
-              <h3>{task.title}</h3>
-              <p>Due Date: {task.due_date}</p>
-              <p>Priority: {task.priority}</p>
-              <p>Status: {task.completed ? 'Completed' : 'Pending'}</p>
-              <button onClick={() => deleteTask(task.id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="container mt-4">
+      <h2 className="text-center mb-4">Task List</h2>
+      <div className="row g-4">
+        {tasks.map((task) => (
+          <div key={task.id} className="col-md-4">
+            <div
+              className="card h-100 shadow-sm border-0 rounded"
+              style={{ transition: 'box-shadow 0.3s' }}
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)')}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
+            >
+              <div className="card-body">
+                <h5 className="card-title">{task.title}</h5>
+                <p className="card-text">
+                  <strong>Due:</strong> {task.due_date} <br />
+                  <strong>Priority:</strong> {task.priority}
+                </p>
+                <div className="form-check mb-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id={`complete-${task.id}`}
+                    checked={task.completed}
+                    onChange={() => toggleCompletion(task)}
+                  />
+                  <label className="form-check-label" htmlFor={`complete-${task.id}`}>
+                    {task.completed ? 'Completed' : 'Pending'}
+                  </label>
+                </div>
+                <button className="btn btn-primary btn-sm" onClick={() => deleteTask(task.id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
