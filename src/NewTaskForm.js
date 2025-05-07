@@ -27,7 +27,7 @@ const NewTaskForm = ({ onTaskAdded }) => {
   return (
     <div className="container mt-5">
       <div className="card shadow-sm mx-auto p-4" style={{ maxWidth: '600px' }}>
-        <h4 className="text-center mb-4">Add New Task</h4>
+        <h4 className="text-center mb-4">Submit New Task</h4>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Title</label>
