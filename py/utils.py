@@ -25,7 +25,8 @@ def add_task(title, due_date, priority):
         'priority': priority,
         'completed': False,
         'created_at': now,
-        'updated_at': now
+        'updated_at': now,
+        'comments': []  # ← new
     }
     tasks.append(task)
     save_tasks(tasks)

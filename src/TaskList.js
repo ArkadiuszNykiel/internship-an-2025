@@ -1,6 +1,7 @@
 // src/components/TaskList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
@@ -51,7 +52,11 @@ const TaskList = () => {
               onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
             >
               <div className="card-body">
-                <h5 className="card-title">{task.title}</h5>
+                <h5 className="card-title"> 
+                  <Link to={`/tasks/${task.id}`} className="text-decoration-none text-dark">
+                  {task.title}
+    </Link></h5>
+                
                 <p className="card-text">
                   <strong>Due:</strong> {task.due_date} <br />
                   <strong>Priority:</strong> {task.priority}

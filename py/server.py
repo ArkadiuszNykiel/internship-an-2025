@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS  # Import CORS
-from utils import load_tasks, add_task, delete_task, update_task, filter_tasks
+from utils import load_tasks, add_task, delete_task, update_task, filter_tasks, save_tasks
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app) 
@@ -38,6 +39,27 @@ def edit_task(task_id):
 def remove_task(task_id):
     updated_tasks = delete_task(task_id)
     return jsonify(updated_tasks)
+
+@app.route('/tasks/<task_id>/comments', methods=['POST'])
+def add_comment(task_id):
+    data = request.get_json()
+    comment = data.get('comment')
+    if not comment:
+        return jsonify({'error': 'No comment provided'}), 400
+
+    tasks = load_tasks()
+    for task in tasks:
+        if task['id'] == task_id:
+            task.setdefault('comments', []).append({
+                'text': comment,
+                'timestamp': datetime.utcnow().isoformat()
+            })
+            task['updated_at'] = datetime.utcnow().isoformat()
+            save_tasks(tasks)
+            return jsonify(task)
+
+    return jsonify({'error': 'Task not found'}), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)

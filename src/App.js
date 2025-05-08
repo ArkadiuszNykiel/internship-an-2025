@@ -1,22 +1,22 @@
 // src/App.js
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TaskList from './TaskList';
 import NewTaskForm from './NewTaskForm';
-const App = () => {
-  const [refresh, setRefresh] = useState(false);
+import TaskDetails from './TaskDetails'; // New
 
-  // Callback to refresh task list after adding a new task
-  const handleTaskAdded = () => {
-    setRefresh(!refresh);
-  };
-
+function App() {
   return (
-    <div>
-      <h1>Todo List</h1>
-      <NewTaskForm onTaskAdded={handleTaskAdded} />
-      <TaskList key={refresh} />
-    </div>
+    <Router>
+      <div className="container mt-4">
+        <NewTaskForm />
+        <Routes>
+          <Route path="/" element={<TaskList />} />
+          <Route path="/tasks/:id" element={<TaskDetails />} />
+        </Routes>
+      </div>
+    </Router>
   );
-};
+}
 
 export default App;
